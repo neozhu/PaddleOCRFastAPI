@@ -88,6 +88,20 @@ Test completed in `Centos 7`, `Ubuntu 20.04`, `Ubuntu 22.04`, `Windows 10`, `Win
 
 5. Swagger Page at `localhost:<port>/docs`
 
+## deploy and push your local code as blazordevlab/paddleocrapi:latest to Docker Hub 
+1. Login to Docker Hub
+```
+docker login
+```
+2. Build the Docker Image
+```
+docker build -t blazordevlab/paddleocrapi:latest .
+```
+3. Push the Image to Docker Hub
+```
+docker push blazordevlab/paddleocrapi:latest
+```
+
 ## Change language
 
 1. Clone this repo to localhost.

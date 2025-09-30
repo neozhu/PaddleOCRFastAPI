@@ -6,9 +6,9 @@
 #
 fastapi==0.115.11
     # via -r requirements.in
-paddleocr==2.10.0
+paddleocr==3.2.0
     # via -r requirements.in
-paddlepaddle==3.0.0rc1
+paddlepaddle==3.2.0
     # via -r requirements.in
 python-multipart==0.0.20
     # via -r requirements.in

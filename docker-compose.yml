@@ -1,8 +1,9 @@
-version: "3"
+# version: "3"
 
 services:
 
   PaddleOCR:
+    build: . 
     container_name: paddle_ocr_api # 自定义容器名
     image: paddleocrfastapi:2025 # 使用刚才构建的镜像
     environment:

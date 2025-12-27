@@ -1,3 +1,6 @@
+[![Docker Build](https://github.com/neozhu/PaddleOCRFastAPI/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/neozhu/PaddleOCRFastAPI/actions/workflows/docker-publish.yml)
+[![Python Build](https://github.com/neozhu/PaddleOCRFastAPI/actions/workflows/python-build.yml/badge.svg)](https://github.com/neozhu/PaddleOCRFastAPI/actions/workflows/python-build.yml)
+
 # PaddleOCRFastAPI
 
 ![GitHub](https://img.shields.io/github/license/cgcel/PaddleOCRFastAPI)

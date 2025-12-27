@@ -24,4 +24,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/face-extraction-api:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/paddleocr-api:latest

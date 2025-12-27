@@ -13,8 +13,8 @@ A simple way to deploy `PaddleOCR` based on `FastAPI`.
 
 | PaddleOCR | Branch |
 | :--: | :--: |
-| v2.5 | [paddleocr-v2.5](https://github.com/cgcel/PaddleOCRFastAPI/tree/paddleocr-v2.5) |
-| v2.7 | [paddleocr-v2.7](https://github.com/cgcel/PaddleOCRFastAPI/tree/paddleocr-v2.7) |
+| v2.5 | [paddleocr-v2.5](https://github.com/neozhu/PaddleOCRFastAPI/tree/paddleocr-v2.5) |
+| v2.7 | [paddleocr-v2.7](https://github.com/neozhu/PaddleOCRFastAPI/tree/paddleocr-v2.7) |
 
 ## Features
 
@@ -29,7 +29,7 @@ A simple way to deploy `PaddleOCR` based on `FastAPI`.
 1. Copy the project to the deployment path
 
    ```shell
-   git clone https://github.com/cgcel/PaddleOCRFastAPI.git
+   git clone https://github.com/neozhu/PaddleOCRFastAPI.git
    ```
 
    > *The master branch is the most recent version of PaddleOCR supported by the project. To install a specific version, clone the branch with the corresponding version number.*
@@ -54,7 +54,7 @@ Test completed in `Centos 7`, `Ubuntu 20.04`, `Ubuntu 22.04`, `Windows 10`, `Win
 1. Copy the project to the deployment path
 
    ```shell
-   git clone https://github.com/cgcel/PaddleOCRFastAPI.git
+   git clone https://github.com/neozhu/PaddleOCRFastAPI.git
    ```
 
    > *The master branch is the most recent version of PaddleOCR supported by the project. To install a specific version, clone the branch with the corresponding version number.*

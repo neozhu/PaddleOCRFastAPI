@@ -17,9 +17,9 @@ router = APIRouter(prefix="/ocr", tags=["OCR"])
 ocr = PaddleOCR(
     text_detection_model_name="PP-OCRv5_mobile_det",
     text_recognition_model_name="PP-OCRv5_mobile_rec",
-    use_doc_orientation_classify=True,
-    use_doc_unwarping=True,
-    use_textline_orientation=False,
+    use_angle_cls=True,
+    use_doc_orientation_classify=False,
+    use_doc_unwarping=False,
     lang=OCR_LANGUAGE
 )
 def _np_to_list(value):
@@ -119,8 +119,16 @@ def predict_by_base64(base64model: Base64PostModel):
     with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp_file:
         import cv2
         cv2.imwrite(tmp_file.name, img)
-        result = ocr.predict(input=tmp_file.name)
-        os.unlink(tmp_file.name)  # 删除临时文件
+        tmp_file_path = tmp_file.name
+    
+    try:
+        result = ocr.predict(input=tmp_file_path)
+    finally:
+        # 删除临时文件
+        try:
+            os.unlink(tmp_file_path)
+        except Exception:
+            pass
     
     # 提取关键数据：input_path, rec_texts, rec_boxes
     result_data = extract_ocr_data(result)
@@ -142,8 +150,16 @@ async def predict_by_file(file: UploadFile):
         with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp_file:
             tmp_file.write(file_bytes)
             tmp_file.flush()
-            result = ocr.predict(input=tmp_file.name)
-            os.unlink(tmp_file.name)  # 删除临时文件
+            tmp_file_path = tmp_file.name
+        
+        try:
+            result = ocr.predict(input=tmp_file_path)
+        finally:
+            # 删除临时文件
+            try:
+                os.unlink(tmp_file_path)
+            except Exception:
+                pass
         
         # 提取关键数据：input_path, rec_texts, rec_boxes
         result_data = extract_ocr_data(result)

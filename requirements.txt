@@ -6,7 +6,7 @@
 #
 fastapi==0.115.11
     # via -r requirements.in
-paddleocr==3.3.2
+paddleocr==3.4.0
     # via -r requirements.in
 paddlepaddle==3.2.0
     # via -r requirements.in
@@ -16,7 +16,7 @@ uvicorn==0.33.0
     # via -r requirements.in
 requests==2.32.3
     # via -r requirements.in
-numpy==1.24.4
+numpy==1.26.4
     # via -r requirements.in
 pyyaml
 

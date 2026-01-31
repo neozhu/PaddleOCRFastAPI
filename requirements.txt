@@ -18,6 +18,8 @@ requests==2.32.3
     # via -r requirements.in
 numpy==1.26.4
     # via -r requirements.in
+pymupdf>=1.23.0
+    # via -r requirements.in
 pyyaml
 
 # The following packages are considered to be unsafe in a requirements file:

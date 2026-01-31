@@ -1,0 +1,41 @@
+{'input_path': None, 'page_index': None, 'page_count': None, 'width': 842, 'height': 595, 'doc_preprocessor_res': {'output_img': array([[[255, ..., 255],
+        ...,
+        [255, ..., 255]],
+
+       ...,
+
+       [[255, ..., 255],
+        ...,
+        [255, ..., 255]]], dtype=uint8)}, 'layout_det_res': {'input_path': None, 'page_index': None, 'boxes': [{'cls_id': 0, 'label': 'ocr', 'score': 1, 'coordinate': [0, 0, 842, 595]}]}, 'table_res_list': [], 'parsing_res_list': [
+
+#################
+label:	ocr
+bbox:	[0, 0, 842, 595]
+content:	Products
+
+Brand
+Name
+Product Name
+Description
+Price of unit
+Unit
+
+Apple
+iPhone 13 Pro
+Apple iPhone 13 Pro smartphone. Announced Sep 2021. Features 6.1* display. Apple A15 Bionic chipset, 3095 mAh battery, 1024 GB storage.
+
+Sony
+WH-1000XM4
+Sony WH-1000XM4 Wireless Noise-Canceling Over-Ear Headphones. Features industry-leading noise cancellation, up to 30 hours of battery life, touch sensor controls.
+
+Nintendo
+Switch OLED
+Model
+Nintendo Switch OLED Model console. Released October 2021. Features 7* OLED screen, 64GB internal storage, enhanced audio, dock with wired LAN port.
+
+Apple
+MacBook Air M1
+Apple MacBook Air with M1 chip. Features 13.3* Retina display. Apple M1 chip with 8-core CPU, 8GB RAM, 256GB SSD storage, up to 18 hours of battery life.
+
+Apple 1 of 1
+#################], 'spotting_res': {}, 'imgs_in_doc': [], 'model_settings': {'use_doc_preprocessor': False, 'use_layout_detection': False, 'use_chart_recognition': False, 'use_seal_recognition': False, 'use_ocr_for_image_block': False, 'format_block_content': False, 'merge_layout_blocks': True, 'markdown_ignore_labels': ['number', 'footnote', 'header', 'header_image', 'footer', 'footer_image', 'aside_text'], 'return_layout_polygon_points': True}}

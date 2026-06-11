@@ -15,9 +15,9 @@ OCR_LANGUAGE = os.environ.get("OCR_LANGUAGE", "ch")
 router = APIRouter(prefix="/ocr", tags=["OCR"])
 
 ocr = PaddleOCR(
-    text_detection_model_name="PP-OCRv5_mobile_det",
-    text_recognition_model_name="PP-OCRv5_mobile_rec",
-    use_angle_cls=True,
+    text_detection_model_name="PP-OCRv6_small_det",
+    text_recognition_model_name="PP-OCRv6_small_rec",
+    use_textline_orientation=False,
     use_doc_orientation_classify=False,
     use_doc_unwarping=False,
     lang=OCR_LANGUAGE

@@ -40,9 +40,9 @@ def get_pdf_ocr():
     避免服务启动时加载模型导致启动变慢。
     
     模型配置：
-        - 文本检测：PP-OCRv5_mobile_det（轻量级检测模型）
-        - 文本识别：PP-OCRv5_mobile_rec（轻量级识别模型）
-        - 角度分类：启用（自动校正文字方向）
+        - 文本检测：PP-OCRv6_small_det（轻量级检测模型）
+        - 文本识别：PP-OCRv6_small_rec（轻量级识别模型）
+        - 文本行方向分类：禁用（减少模型下载和启动失败风险）
         - 文档方向分类：禁用（减少处理时间）
         - 文档图像矫正：禁用（减少处理时间）
     
@@ -52,9 +52,9 @@ def get_pdf_ocr():
     global _pdf_ocr
     if _pdf_ocr is None:
         _pdf_ocr = PaddleOCR(
-            text_detection_model_name="PP-OCRv5_mobile_det",  # 文本检测模型
-            text_recognition_model_name="PP-OCRv5_mobile_rec",  # 文本识别模型
-            use_angle_cls=True,  # 启用角度分类器
+            text_detection_model_name="PP-OCRv6_small_det",  # 文本检测模型
+            text_recognition_model_name="PP-OCRv6_small_rec",  # 文本识别模型
+            use_textline_orientation=False,  # 禁用文本行方向分类
             use_doc_orientation_classify=False,  # 禁用文档方向分类
             use_doc_unwarping=False,  # 禁用文档矫正
             lang=OCR_LANGUAGE  # 语言设置

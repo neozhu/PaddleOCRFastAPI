@@ -104,7 +104,7 @@ pip install -r requirements.txt
 ```
 
 主要依赖：
-- `paddleocr>=3.4.0` - PaddleOCR 核心库
+- `paddleocr>=3.7.0` - PaddleOCR 核心库
 - `PyMuPDF>=1.23.0` - PDF 文件处理
 
 ## 环境变量

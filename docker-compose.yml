@@ -9,6 +9,8 @@ services:
     environment:
       - TZ=Asia/Hong_Kong
       - OCR_LANGUAGE=ch
+      - PADDLE_PDX_MODEL_SOURCE=BOS
+      - PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK=True
     ports:
       - 8000:8000 # 自定义服务暴露端口, 8000为FastAPI默认端口, 不做修改
     volumes:

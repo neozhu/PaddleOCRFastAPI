@@ -4,6 +4,9 @@ EXPOSE 8000
 
 WORKDIR /app
 
+ENV PADDLE_PDX_MODEL_SOURCE=BOS \
+    PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK=True
+
 COPY requirements.txt /app/requirements.txt
 
 # 安装系统依赖

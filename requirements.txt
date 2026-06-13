@@ -8,6 +8,8 @@ fastapi==0.115.11
     # via -r requirements.in
 paddleocr==3.7.0
     # via -r requirements.in
+paddlex[ocr]==3.7.1
+    # via -r requirements.in
 paddlepaddle==3.2.0
     # via -r requirements.in
 python-multipart==0.0.20

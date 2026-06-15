@@ -17,7 +17,8 @@ RUN apt-get update && \
         libglib2.0-0 \
         libsm6 \
         libxrender1 \
-        libxext6 && \
+        libxext6 \
+        ccache && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

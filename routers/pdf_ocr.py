@@ -23,9 +23,6 @@ import numpy as np
 from PIL import Image
 import io
 
-# 从环境变量获取 OCR 语言配置，默认为中文
-OCR_LANGUAGE = os.environ.get("OCR_LANGUAGE", "ch")
-
 # 创建路由器，所有接口前缀为 /pdf
 router = APIRouter(prefix="/pdf", tags=["PDF OCR"])
 
@@ -56,8 +53,7 @@ def get_pdf_ocr():
             text_recognition_model_name="PP-OCRv6_small_rec",  # 文本识别模型
             use_textline_orientation=False,  # 禁用文本行方向分类
             use_doc_orientation_classify=False,  # 禁用文档方向分类
-            use_doc_unwarping=False,  # 禁用文档矫正
-            lang=OCR_LANGUAGE  # 语言设置
+            use_doc_unwarping=False  # 禁用文档矫正
         )
     return _pdf_ocr
 

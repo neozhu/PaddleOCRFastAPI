@@ -6,11 +6,8 @@ from models.RestfulModel import *
 from paddleocr import PaddleOCR
 from utils.ImageHelper import base64_to_ndarray, bytes_to_ndarray
 import requests
-import os
 import tempfile
 import numpy as np
-
-OCR_LANGUAGE = os.environ.get("OCR_LANGUAGE", "ch")
 
 router = APIRouter(prefix="/ocr", tags=["OCR"])
 
@@ -19,8 +16,7 @@ ocr = PaddleOCR(
     text_recognition_model_name="PP-OCRv6_small_rec",
     use_textline_orientation=False,
     use_doc_orientation_classify=False,
-    use_doc_unwarping=False,
-    lang=OCR_LANGUAGE
+    use_doc_unwarping=False
 )
 def _np_to_list(value):
     """仅把需要的 numpy 数组转换为 Python list，其它类型原样返回。"""

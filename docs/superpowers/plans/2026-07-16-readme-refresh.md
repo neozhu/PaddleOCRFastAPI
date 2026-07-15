@@ -29,7 +29,7 @@
 - Consumes: The README visual direction from `docs/superpowers/specs/2026-07-16-readme-refresh-design.md`.
 - Produces: A landscape PNG at `screenshots/api-usage-flow.png`, referenced by both README files.
 
-- [ ] **Step 1: Generate one documentation illustration**
+- [x] **Step 1: Generate one documentation illustration**
 
 Use the built-in image generator with this prompt:
 
@@ -46,11 +46,11 @@ Constraints: depict usage only, keep the English labels large and legible, no lo
 Avoid: unreadable small text, Chinese characters, extra branding, dark background.
 ```
 
-- [ ] **Step 2: Save the generated asset in the repository**
+- [x] **Step 2: Save the generated asset in the repository**
 
 Copy the selected non-empty generated PNG to `screenshots/api-usage-flow.png`. Do not overwrite `screenshots/Swagger.png`.
 
-- [ ] **Step 3: Inspect the asset**
+- [x] **Step 3: Inspect the asset**
 
 Run: `Get-Item screenshots\api-usage-flow.png | Select-Object Length`
 
@@ -66,23 +66,23 @@ Expected: a non-zero file size, with an image showing input, request, and output
 - Consumes: `screenshots/api-usage-flow.png` and route contracts in `routers/ocr.py`, `routers/table.py`, and `routers/pdf_ocr.py`.
 - Produces: An English quick-start README that documents current features and actual curl requests.
 
-- [ ] **Step 1: Replace obsolete overview and version-selection content**
+- [x] **Step 1: Replace obsolete overview and version-selection content**
 
 Write an English overview that identifies the service as a FastAPI wrapper for PaddleOCR 3.7.x, powered by PP-OCRv6 small detection and recognition models. State the Docker image base is Python 3.12. Remove the PaddleOCR v2.5/v2.7 branch table and the old `OCR_LANGUAGE` customization instructions.
 
-- [ ] **Step 2: Add quick-start instructions**
+- [x] **Step 2: Add quick-start instructions**
 
 Document `python -m venv .venv`, activation, `pip install -r requirements.txt`, and `uvicorn main:app --host 0.0.0.0 --port 8000`. Document the first-request model download and `http://localhost:8000/docs`. Add Docker commands `docker compose up --build -d` and `docker compose logs -f`.
 
-- [ ] **Step 3: Add verified API examples**
+- [x] **Step 3: Add verified API examples**
 
 Document `POST /ocr/predict-by-file` with multipart field `file`; `GET /ocr/predict-by-url` with query parameter `imageUrl`; `POST /table/predict-by-file?format=json` with multipart field `file`; and `POST /pdf/predict-by-file` with multipart field `file`. Include a short OCR JSON shape (`resultcode`, `message`, `data`, `rec_texts`, `rec_boxes`) and table output options `json`, `html`, and `xlsx`.
 
-- [ ] **Step 4: Insert the shared visual and current repository links**
+- [x] **Step 4: Insert the shared visual and current repository links**
 
 Reference `screenshots/api-usage-flow.png` immediately after the opening overview. Retain a link to `README_CN.md`, the Swagger endpoint, and `LICENSE`. Do not reference stale `cgcel` URLs.
 
-- [ ] **Step 5: Validate Markdown references**
+- [x] **Step 5: Validate Markdown references**
 
 Run: `rg -n "api-usage-flow|README_CN|/docs|LICENSE" README.md`
 
@@ -98,15 +98,15 @@ Expected: every required relative file and URL is present.
 - Consumes: `README.md`, `screenshots/api-usage-flow.png`, and the verified route contracts.
 - Produces: A Chinese README with the same operational coverage as the English README.
 
-- [ ] **Step 1: Mirror the English structure in natural Chinese**
+- [x] **Step 1: Mirror the English structure in natural Chinese**
 
 Use the sections `简介`, `功能`, `快速开始`, `API 示例`, `接口说明`, `常见说明`, and `许可证`. Keep executable commands and route names identical to the English README, while translating explanatory text.
 
-- [ ] **Step 2: Use the shared visual**
+- [x] **Step 2: Use the shared visual**
 
 Add `![PaddleOCRFastAPI 使用流程](./screenshots/api-usage-flow.png)` after the Chinese overview. Link back to `README.md`.
 
-- [ ] **Step 3: Validate the two Markdown files and final diff**
+- [x] **Step 3: Validate the two Markdown files and final diff**
 
 Run:
 

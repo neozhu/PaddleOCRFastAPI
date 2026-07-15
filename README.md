@@ -3,141 +3,149 @@
 
 # PaddleOCRFastAPI
 
-![GitHub](https://img.shields.io/github/license/cgcel/PaddleOCRFastAPI)
+[中文文档](./README_CN.md)
 
-[中文](./README_CN.md)
+A practical FastAPI service for image OCR, PDF table extraction, and table recognition from images or PDFs. The current dependency set uses PaddleOCR 3.7.0, PaddleX OCR 3.7.1, and PaddlePaddle 3.2.0. OCR uses the lightweight PP-OCRv6 detection and recognition models.
 
-A simple way to deploy `PaddleOCR` based on `FastAPI`.
+The Docker image is based on Python 3.12.
 
-## Support Version
-
-| PaddleOCR | Branch |
-| :--: | :--: |
-| v2.5 | [paddleocr-v2.5](https://github.com/neozhu/PaddleOCRFastAPI/tree/paddleocr-v2.5) |
-| v2.7 | [paddleocr-v2.7](https://github.com/neozhu/PaddleOCRFastAPI/tree/paddleocr-v2.7) |
+![PaddleOCRFastAPI usage flow](./screenshots/api-usage-flow.png)
 
 ## Features
 
-- [x] Local path image recognition
-- [x] Base64 data recognition
-- [x] Upload file recognition
+- Image OCR from file upload, URL, Base64 data, or a local path.
+- Table recognition from an uploaded image/PDF or a public image/PDF URL.
+- Table extraction from uploaded or public PDFs.
+- JSON, HTML, or XLSX output for the table-recognition endpoints.
+- Interactive OpenAPI documentation at `/docs`.
 
-## Deployment Methods
+## Quick start
 
-### Deploy Directly
+### Run locally
 
-1. Copy the project to the deployment path
+Use Python 3.9 or later; Python 3.12 matches the Docker image.
 
-   ```shell
-   git clone https://github.com/neozhu/PaddleOCRFastAPI.git
-   ```
+```shell
+git clone https://github.com/neozhu/PaddleOCRFastAPI.git
+cd PaddleOCRFastAPI
 
-   > *The master branch is the most recent version of PaddleOCR supported by the project. To install a specific version, clone the branch with the corresponding version number.*
+python -m venv .venv
+# Linux/macOS
+source .venv/bin/activate
+# Windows PowerShell
+# .\.venv\Scripts\Activate.ps1
 
-2. (Optional) Create new virtual environment to avoid dependency conflicts
-3. Install required dependencies
-
-   ```shell
-   pip3 install -r requirements.txt
-   ```
-
-4. Run FastAPI
-
-   ```shell
-   uvicorn main:app --host 0.0.0.0
-   ```
-
-### Docker Deployment
-
-Test completed in `Centos 7`, `Ubuntu 20.04`, `Ubuntu 22.04`, `Windows 10`, `Windows 11`, requires `Docker` to be installed.
-
-1. Copy the project to the deployment path
-
-   ```shell
-   git clone https://github.com/neozhu/PaddleOCRFastAPI.git
-   ```
-
-   > *The master branch is the most recent version of PaddleOCR supported by the project. To install a specific version, clone the branch with the corresponding version number.*
-
-2. Building a Docker Image
-
-   ```shell
-   cd PaddleOCRFastAPI
-   # 手工下载模型，避免程序第一次运行时自动下载，实现完全离线，加快启动速度
-   cd pp-ocrv4/ && sh download_det_cls_rec.sh
-   
-   # 返回Dockfile所在目录，开始build
-   cd ..
-   # 使用宿主机网络
-   # 可直接使用宿主机上的代理设置，例如在build时，用宿主机上的代理
-   # docker build -t paddleocrfastapi:latest --network host --build-arg HTTP_PROXY=http://127.0.0.1:8888 --build-arg HTTPS_PROXY=http://127.0.0.1:8888 .
-   docker build -t paddleocrfastapi:latest --network host .
-   ```
-
-3. Edit `docker-compose.yml`
-
-   ```yaml
-   version: "3"
-
-   services:
-
-     paddleocrfastapi:
-       container_name: paddleocrfastapi # Custom Container Name
-       image: paddleocrfastapi:lastest # Customized Image Name & Label in Step 2
-       environment:
-         - TZ=Asia/Hong_Kong
-         - OCR_LANGUAGE=ch # support 80 languages. refer to https://github.com/Mushroomcat9998/PaddleOCR/blob/main/doc/doc_en/multi_languages_en.md#language_abbreviations
-       ports:
-        - "8000:8000" # Customize the service exposure port, 8000 is the default FastAPI port, do not modify
-       restart: unless-stopped
-   ```
-
-4. Create the Docker container and run
-
-   ```shell
-   docker compose up -d
-   ```
-
-5. Swagger Page at `localhost:<port>/docs`
-
-## deploy and push your local code as blazordevlab/paddleocrapi:latest to Docker Hub 
-1. Login to Docker Hub
-```
-docker login
-```
-2. Build the Docker Image
-```
-docker build -t blazordevlab/paddleocrapi:latest .
-```
-3. Push the Image to Docker Hub
-```
-docker push blazordevlab/paddleocrapi:latest
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-## Change language
+Open <http://localhost:8000/docs> to try the API. PaddleOCR models may be downloaded when an endpoint is first used, so the first request can take longer than subsequent requests.
 
-1. Clone this repo to localhost.
-2. Edit `routers/ocr.py`, modify the parameter "lang":
+### Run with Docker Compose
 
-   ```python
-   ocr = PaddleOCR(use_angle_cls=True, lang="ch")
-   ```
+```shell
+git clone https://github.com/neozhu/PaddleOCRFastAPI.git
+cd PaddleOCRFastAPI
+docker compose up --build -d
+docker compose logs -f
+```
 
-   Before modify, read the [supported language list](https://github.com/PaddlePaddle/PaddleOCR/blob/release/2.7/doc/doc_en/multi_languages_en.md#5-support-languages-and-abbreviations).
+The Compose configuration exposes port `8000` and persists downloaded PaddleX models in the `paddleocr_models` Docker volume.
 
-3. Rebuild the docker image, or run the `main.py` directly.
+## API examples
 
-## Screenshots
-API Docs: `/docs`
+All examples assume the service is running at `http://localhost:8000`.
 
-![Swagger](https://raw.githubusercontent.com/cgcel/PaddleOCRFastAPI/dev/screenshots/Swagger.png)
+### OCR an uploaded image
 
-## Todo
+`POST /ocr/predict-by-file` accepts `jpg`, `jpeg`, `png`, `bmp`, and `tiff` files through the multipart field `file`.
 
-- [x] support ppocr v4
-- [ ] GPU mode
-- [x] Image url recognition
+```shell
+curl -X POST "http://localhost:8000/ocr/predict-by-file" \
+  -F "file=@./receipt.png"
+```
+
+The result contains recognized text and its bounding boxes:
+
+```json
+{
+  "resultcode": 200,
+  "message": "receipt.png",
+  "data": [
+    {
+      "input_path": "...",
+      "rec_texts": ["Example text"],
+      "rec_boxes": [[12, 20, 180, 54]]
+    }
+  ]
+}
+```
+
+### OCR a public image URL
+
+`GET /ocr/predict-by-url` uses the query parameter `imageUrl`.
+
+```shell
+curl -G "http://localhost:8000/ocr/predict-by-url" \
+  --data-urlencode "imageUrl=https://example.com/receipt.png"
+```
+
+Other image OCR endpoints are `GET /ocr/predict-by-path` (`image_path`) and `POST /ocr/predict-by-base64` (`{"base64_str":"..."}`). Local paths are resolved by the server, so use that endpoint only for files available to the running service.
+
+### Recognize the first table in an image or PDF
+
+`POST /table/predict-by-file` accepts an image or PDF through `file`. Select `json` (default), `html`, or `xlsx` using `format`.
+
+```shell
+curl -X POST "http://localhost:8000/table/predict-by-file?format=json" \
+  -F "file=@./report.pdf"
+```
+
+For `format=json`, the response includes both the generated table HTML and simplified rows:
+
+```json
+{
+  "resultcode": 200,
+  "message": "Success",
+  "data": {
+    "html": "<table>...</table>",
+    "rows": [["Header A", "Header B"], ["Value 1", "Value 2"]]
+  }
+}
+```
+
+`GET /table/predict-by-url` provides the same capability for a public `url` query parameter. It accepts image and PDF URLs.
+
+### Extract tables from a PDF
+
+`POST /pdf/predict-by-file` accepts a PDF through `file` and returns only pages where a table is found.
+
+```shell
+curl -X POST "http://localhost:8000/pdf/predict-by-file" \
+  -F "file=@./report.pdf"
+```
+
+For a public PDF, use `GET /pdf/predict-by-url` with the `pdf_url` query parameter.
+
+## Endpoint summary
+
+| Endpoint | Purpose |
+| --- | --- |
+| `GET /ocr/predict-by-path` | OCR an image path visible to the server. |
+| `POST /ocr/predict-by-base64` | OCR Base64 image data. |
+| `POST /ocr/predict-by-file` | OCR an uploaded image. |
+| `GET /ocr/predict-by-url` | OCR a public image URL. |
+| `POST /table/predict-by-file` | Recognize the first table in an uploaded image or PDF. |
+| `GET /table/predict-by-url` | Recognize the first table in a public image or PDF URL. |
+| `POST /pdf/predict-by-file` | Extract tables from an uploaded PDF. |
+| `GET /pdf/predict-by-url` | Extract tables from a public PDF URL. |
+
+## Notes
+
+- Table recognition requires the version-matched `paddlex[ocr]==3.7.1` dependency included in `requirements.txt`.
+- Public URL endpoints require the server to be able to download the source file.
+- The service is configured for CPU-compatible defaults. No GPU setup is included in this repository.
 
 ## License
 
-**PaddleOCRFastAPI** is licensed under the MIT license. Refer to [LICENSE](https://github.com/cgcel/PaddleOCRFastAPI/blob/master/LICENSE) for more information.
+PaddleOCRFastAPI is released under the [MIT License](./LICENSE).

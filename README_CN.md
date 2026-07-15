@@ -1,120 +1,148 @@
+[English](./README.md)
+
 # PaddleOCRFastAPI
 
-一个可 Docker (Compose) 部署的, 基于 `FastAPI` 的简易版 Paddle OCR Web API.
+一个面向实际调用场景的 FastAPI 服务：支持图片 OCR、PDF 表格提取，以及图片/PDF 的表格识别。当前依赖版本为 PaddleOCR 3.7.0、PaddleX OCR 3.7.1 和 PaddlePaddle 3.2.0；图片 OCR 使用轻量级 PP-OCRv6 检测与识别模型。
 
-## 版本选择
+Docker 镜像基于 Python 3.12。
 
-| PaddleOCR | Branch |
-| :--: | :--: |
-| v2.5 | [paddleocr-v2.5](https://github.com/cgcel/PaddleOCRFastAPI/tree/paddleocr-v2.5) |
-| v2.7 | [paddleocr-v2.7](https://github.com/cgcel/PaddleOCRFastAPI/tree/paddleocr-v2.7) |
+![PaddleOCRFastAPI 使用流程](./screenshots/api-usage-flow.png)
 
-## 接口功能
+## 功能
 
-- [x] 局域网范围内路径图片 OCR 识别
-- [x] Base64 数据识别
-- [x] 上传文件识别
+- 通过上传文件、URL、Base64 数据或服务端本地路径进行图片 OCR。
+- 识别上传图片/PDF 或公开图片/PDF URL 中的表格。
+- 提取上传 PDF 或公开 PDF URL 中的表格数据。
+- 表格识别接口支持 JSON、HTML、XLSX 三种输出格式。
+- 提供 `/docs` 交互式 OpenAPI 文档。
 
-## 部署方式
+## 快速开始
 
-### 直接部署
+### 本地运行
 
-1. 复制项目至部署路径
+建议使用 Python 3.9 及以上版本；Python 3.12 与 Docker 镜像保持一致。
 
-   ```shell
-   git clone https://github.com/cgcel/PaddleOCRFastAPI.git
-   ```
+```shell
+git clone https://github.com/neozhu/PaddleOCRFastAPI.git
+cd PaddleOCRFastAPI
 
-   > *master 分支为项目中支持的 PaddleOCR 的最新版本, 如需安装特定版本, 请克隆对应版本号的分支.*
+python -m venv .venv
+# Linux/macOS
+source .venv/bin/activate
+# Windows PowerShell
+# .\.venv\Scripts\Activate.ps1
 
-2. (可选) 新建虚拟环境, 避免依赖冲突
-3. 安装所需依赖
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
 
-   ```shell
-   pip3 install -r requirements.txt
-   ```
+访问 <http://localhost:8000/docs> 即可调用接口。PaddleOCR 模型会在首次调用相关接口时下载，因此第一次请求通常比后续请求耗时更长。
 
-4. 运行 FastAPI
+### Docker Compose 运行
 
-   ```shell
-   uvicorn main:app --host 0.0.0.0
-   ```
+```shell
+git clone https://github.com/neozhu/PaddleOCRFastAPI.git
+cd PaddleOCRFastAPI
+docker compose up --build -d
+docker compose logs -f
+```
 
-### Docker 部署
+Compose 默认暴露 `8000` 端口，并通过 `paddleocr_models` Docker 卷持久化 PaddleX 下载的模型。
 
-在 `Centos 7`, `Ubuntu 20.04`, `Ubuntu 22.04`, `Windows 10`, `Windows 11` 中测试成功, 需要先安装好 `Docker`.
+## API 示例
 
-1. 复制项目至部署路径
+以下示例默认服务地址为 `http://localhost:8000`。
 
-   ```shell
-   git clone https://github.com/cgcel/PaddleOCRFastAPI.git
-   ```
+### 上传图片 OCR
 
-   > *master 分支为项目中支持的 PaddleOCR 的最新版本, 如需安装特定版本, 请克隆对应版本号的分支.*
+`POST /ocr/predict-by-file` 通过 multipart 表单字段 `file` 接收 `jpg`、`jpeg`、`png`、`bmp`、`tiff` 图片。
 
-2. 制作 Docker 镜像
+```shell
+curl -X POST "http://localhost:8000/ocr/predict-by-file" \
+  -F "file=@./receipt.png"
+```
 
-   ```shell
-   cd PaddleOCRFastAPI
-   # 手工下载模型，避免程序第一次运行时自动下载。实现完全离线，加快启动速度
-   cd pp-ocrv4/ && sh download_det_cls_rec.sh
+返回结果包含识别文本和对应的边界框：
 
-   # 返回Dockfile所在目录，开始build
-   cd ..
-   # 使用宿主机网络build
-   # 可以用宿主机上的http_proxy和https_proxy
-   docker build -t paddleocrfastapi:latest --network host .
-   ```
+```json
+{
+  "resultcode": 200,
+  "message": "receipt.png",
+  "data": [
+    {
+      "input_path": "...",
+      "rec_texts": ["示例文本"],
+      "rec_boxes": [[12, 20, 180, 54]]
+    }
+  ]
+}
+```
 
-3. 编辑 `docker-compose.yml`
+### 识别公开图片 URL
 
-   ```yaml
-   version: "3"
+`GET /ocr/predict-by-url` 使用查询参数 `imageUrl`。
 
-   services:
+```shell
+curl -G "http://localhost:8000/ocr/predict-by-url" \
+  --data-urlencode "imageUrl=https://example.com/receipt.png"
+```
 
-     paddleocrfastapi:
-       container_name: paddleocrfastapi # 自定义容器名
-       image: paddleocrfastapi:latest # 第2步自定义的镜像名与标签
-       environment:
-         - TZ=Asia/Hong_Kong
-       ports:
-        - "8000:8000" # 自定义服务暴露端口, 8000 为 FastAPI 默认端口, 不做修改
-       restart: unless-stopped
-   ```
+其他图片 OCR 接口包括 `GET /ocr/predict-by-path`（参数 `image_path`）和 `POST /ocr/predict-by-base64`（请求体 `{"base64_str":"..."}`）。本地路径由服务端解析，只应传入运行服务的机器上可访问的文件。
 
-4. 生成 Docker 容器并运行
+### 识别图片或 PDF 中的第一个表格
 
-   ```shell
-   docker-compose up -d
-   ```
+`POST /table/predict-by-file` 通过 `file` 接收图片或 PDF。使用 `format` 选择 `json`（默认）、`html` 或 `xlsx` 输出。
 
-5. Swagger 页面请访问 localhost:\<port\>/docs
+```shell
+curl -X POST "http://localhost:8000/table/predict-by-file?format=json" \
+  -F "file=@./report.pdf"
+```
 
-## Change language
+当 `format=json` 时，响应同时包含生成的表格 HTML 和简化后的行数据：
 
-1. 将此仓库克隆至本地.
-2. 编辑 `routers/ocr.py`, 修改参数 "lang":
+```json
+{
+  "resultcode": 200,
+  "message": "Success",
+  "data": {
+    "html": "<table>...</table>",
+    "rows": [["表头 A", "表头 B"], ["值 1", "值 2"]]
+  }
+}
+```
 
-   ```python
-   ocr = PaddleOCR(use_angle_cls=True, lang="ch")
-   ```
+`GET /table/predict-by-url` 提供相同能力，使用公开文件的 `url` 查询参数，支持图片与 PDF URL。
 
-   编辑前, 先阅读 [supported language list](https://github.com/PaddlePaddle/PaddleOCR/blob/release/2.7/doc/doc_en/multi_languages_en.md#5-support-languages-and-abbreviations).
+### 从 PDF 提取表格
 
-3. 重新创建 docker 镜像, 或直接运行 `main.py`.
+`POST /pdf/predict-by-file` 通过 `file` 接收 PDF，只返回检测到表格的页面。
 
-## 运行截图
-API 文档：`/docs`
+```shell
+curl -X POST "http://localhost:8000/pdf/predict-by-file" \
+  -F "file=@./report.pdf"
+```
 
-![Swagger](https://raw.githubusercontent.com/cgcel/PaddleOCRFastAPI/dev/screenshots/Swagger.png)
+如需处理公开 PDF，使用 `GET /pdf/predict-by-url`，查询参数为 `pdf_url`。
 
-## Todo
+## 接口说明
 
-- [ ] support ppocr v4
-- [ ] GPU mode
-- [x] Image url recognition
+| 接口 | 说明 |
+| --- | --- |
+| `GET /ocr/predict-by-path` | 识别服务端可访问的图片路径。 |
+| `POST /ocr/predict-by-base64` | 识别 Base64 图片数据。 |
+| `POST /ocr/predict-by-file` | 识别上传图片。 |
+| `GET /ocr/predict-by-url` | 识别公开图片 URL。 |
+| `POST /table/predict-by-file` | 识别上传图片或 PDF 中的第一个表格。 |
+| `GET /table/predict-by-url` | 识别公开图片或 PDF URL 中的第一个表格。 |
+| `POST /pdf/predict-by-file` | 从上传 PDF 中提取表格。 |
+| `GET /pdf/predict-by-url` | 从公开 PDF URL 中提取表格。 |
 
-## License
+## 常见说明
 
-**PaddleOCRFastAPI** is licensed under the MIT license. Refer to [LICENSE](https://github.com/cgcel/PaddleOCRFastAPI/blob/master/LICENSE) for more information.
+- 表格识别依赖与 PaddleOCR 匹配的 `paddlex[ocr]==3.7.1`，该依赖已包含在 `requirements.txt` 中。
+- URL 接口要求服务端能够下载目标文件；请使用无需登录即可访问的链接。
+- 当前仓库采用 CPU 兼容的默认配置，未包含 GPU 部署配置。
+
+## 许可证
+
+PaddleOCRFastAPI 使用 [MIT License](./LICENSE) 发布。
